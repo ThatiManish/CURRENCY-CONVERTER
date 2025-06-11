@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Currency Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+    label, select, input, button {
+      display: block;
+      margin: 10px 0;
+      width: 100%;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Currency Converter</h2>
+
+  <label for="amount">Amount:</label>
+  <input type="number" id="amount" placeholder="Enter amount" />
+
+  <label for="base">From:</label>
+  <select id="base">
+    <option>USD</option>
+    <option>EUR</option>
+    <option>GBP</option>
+    <option>INR</option>
+    <option>JPY</option>
+    <option>AUD</option>
+    <option>CAD</option>
+  </select>
+
+  <label for="target">To:</label>
+  <select id="target">
+    <option>EUR</option>
+    <option>USD</option>
+    <option>GBP</option>
+    <option>INR</option>
+    <option>JPY</option>
+    <option>AUD</option>
+    <option>CAD</option>
+  </select>
+
+  <button onclick="convertCurrency()">Convert</button>
+
+  <div id="result"></div>
+
+  <script>
+    async function convertCurrency() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const base = document.getElementById("base").value;
+      const target = document.getElementById("target").value;
+      const resultDiv = document.getElementById("result");
+
+      if (isNaN(amount)) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${base}`);
+        const data = await response.json();
+        const rate = data.rates[target];
+
+        if (rate) {
+          const converted = amount * rate;
+          resultDiv.textContent = `${amount} ${base} = ${converted.toFixed(2)} ${target}`;
+        } else {
+          resultDiv.textContent = "Conversion failed.";
+        }
+      } catch (error) {
+        alert("Error fetching exchange rate: " + error);
+        resultDiv.textContent = "";
+      }
+    }
+  </script>
+
+</body>
+</html>
